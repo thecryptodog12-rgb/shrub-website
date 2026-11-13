@@ -97,7 +97,7 @@
       <p>Every $SHRUB holder, straight from the chain. Hold, and your clock keeps ticking.</p>
       <div class="chips" id="chips"></div>
     </div>
-    <img src="hi.webp" alt="Shrub waving">
+    <img src="/leaderboard/hi.webp" alt="Shrub waving">
   </header>
 
   <section class="find">
@@ -130,7 +130,7 @@
 
 <script>
 (() => {
-  const STICK = ["king.webp", "cool.webp", "cheer.webp"];
+  const STICK = ["/leaderboard/king.webp", "/leaderboard/cool.webp", "/leaderboard/cheer.webp"];
   const fmt = (n) => n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 1 : 2).replace(/\.0+$/, "") + "M" : n >= 1e3 ? Math.round(n / 1e3) + "K" : String(n);
   const short = (a) => a.slice(0, 6) + "…" + a.slice(-4);
   const date = (t) => new Date(t * 1000).toLocaleDateString("en-GB", { month: "short", year: "numeric" });
@@ -185,7 +185,7 @@
       <div class="msg">${label(a) ? label(a) + " · " : ""}${fmt(r[1])} $SHRUB since ${date(r[2])}${r[3] ? " · 🌳 never sold" : ""}${ageRank ? "" : ` · hold ${data.min_longest.toLocaleString("en")}+ to join the longest-holder board`}</div>`;
   });
 
-  fetch("data.json", { cache: "no-cache" }).then((r) => r.json()).then((d) => {
+  fetch("/leaderboard/data.json", { cache: "no-cache" }).then((r) => r.json()).then((d) => {
     data = d;
     document.getElementById("chips").innerHTML =
       `<span class="chip"><b>${d.holders.toLocaleString("en")}</b> wallets holding ${fmt(d.min_streak)}+</span>` +
