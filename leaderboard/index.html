@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shrub Holders — Leaderboard</title>
+<meta name="description" content="The wallets that have trusted the Shrub the longest. Live $SHRUB holder leaderboard.">
+<meta property="og:title" content="Shrub Holders — who trusts the Shrub the longest?">
+<meta property="og:description" content="Longest and biggest $SHRUB holders, straight from the chain.">
+<meta property="og:image" content="https://shrub.io/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link href="/fonts/fonts.css" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a; --card: #151513; --card-2: #1c1c19; --line: #2a2a26;
+    --text: #fffff4; --muted: rgba(255,255,244,.55); --gold: #f4bb56; --green: #7cc35f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); }
+  body { font-family: GeneralSans-Variable, ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 16px 64px; }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+  nav a { text-decoration: none; color: var(--muted); font-weight: 500; font-size: 15px; }
+  nav a:hover { color: var(--text); }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--text) !important; font-weight: 600; }
+  .brand img { width: 34px; height: 34px; object-fit: contain; }
+
+  header.hero { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; padding: 28px 0 8px; }
+  .hero h1 { font-size: clamp(36px, 7vw, 60px); line-height: 1; margin: 0 0 12px; font-weight: 600; letter-spacing: -.02em; }
+  .hero h1 em { font-style: normal; color: var(--gold); }
+  .hero p { margin: 0; color: var(--muted); font-size: 18px; max-width: 30ch; }
+  .hero img { width: clamp(110px, 22vw, 180px); filter: drop-shadow(0 10px 30px rgba(244,187,86,.18)); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; font-size: 14px; color: var(--muted); }
+  .chip b { color: var(--text); font-weight: 600; }
+
+  .find { margin: 28px 0 8px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+  .find label { display: block; font-weight: 600; margin-bottom: 10px; }
+  .find form { display: flex; gap: 8px; }
+  .find input { flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--line); color: var(--text); border-radius: 12px; padding: 12px 14px; font: inherit; font-size: 15px; }
+  .find input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .find button { background: var(--gold); color: #470200; border: 0; border-radius: 12px; padding: 0 18px; font: inherit; font-weight: 600; cursor: pointer; }
+  .result { margin-top: 14px; display: none; gap: 10px; grid-template-columns: repeat(3, 1fr); }
+  .result.show { display: grid; }
+  .result .box { background: var(--card-2); border-radius: 12px; padding: 12px; }
+  .result .k { color: var(--muted); font-size: 13px; }
+  .result .v { font-size: 20px; font-weight: 600; margin-top: 2px; }
+  .result .msg { grid-column: 1 / -1; color: var(--muted); font-size: 15px; }
+
+  .tabs { display: flex; gap: 6px; margin: 32px 0 14px; background: var(--card); padding: 5px; border-radius: 14px; width: fit-content; border: 1px solid var(--line); }
+  .tabs button { background: transparent; border: 0; color: var(--muted); font: inherit; font-weight: 600; font-size: 15px; padding: 9px 16px; border-radius: 10px; cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: var(--gold); color: #470200; }
+
+  ol.board { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .row { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+  .row.me { border-color: var(--gold); }
+  .rank { font-weight: 600; font-size: 18px; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+  .rank img { width: 46px; height: 46px; object-fit: contain; display: block; margin: -6px auto; }
+  .who a { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 15px; text-decoration: none; }
+  .who a:hover { color: var(--gold); }
+  .who .sub { color: var(--muted); font-size: 13px; margin-top: 3px; }
+  .name { font-family: GeneralSans-Variable, sans-serif; font-weight: 600; font-size: 16px; color: var(--gold); margin-right: 8px; }
+  .badge { display: inline-block; margin-left: 6px; font-size: 12px; font-family: GeneralSans-Variable, sans-serif; color: var(--green); background: rgba(124,195,95,.12); border-radius: 999px; padding: 2px 8px; vertical-align: 1px; }
+  .stat { text-align: right; font-variant-numeric: tabular-nums; }
+  .stat .big { font-weight: 600; font-size: 17px; }
+  .stat .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .more { display: block; margin: 14px auto 0; background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 11px 20px; font: inherit; font-weight: 600; cursor: pointer; }
+
+  .how { margin-top: 40px; color: var(--muted); font-size: 15px; line-height: 1.6; border-top: 1px solid var(--line); padding-top: 24px; }
+  .how h2 { color: var(--text); font-size: 18px; margin: 0 0 8px; }
+  .how ul { padding-left: 18px; margin: 0; }
+  .loading { color: var(--muted); padding: 30px 0; text-align: center; }
+
+  @media (max-width: 560px) {
+    header.hero { grid-template-columns: 1fr; }
+    .hero img { position: absolute; right: 16px; top: 74px; width: 92px; }
+    .hero h1 { padding-right: 96px; }
+    .row { grid-template-columns: 38px 1fr; }
+    .stat { grid-column: 2; text-align: left; display: flex; gap: 10px; align-items: baseline; }
+    .rank img { width: 36px; height: 36px; }
+    .result { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="/"><img src="/assets/shrub.webp" alt="">Shrub</a>
+    <a href="/">← back to shrub.io</a>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <h1>Who trusts the <em>Shrub</em> the longest?</h1>
+      <p>Every $SHRUB holder, straight from the chain. Hold, and your clock keeps ticking.</p>
+      <div class="chips" id="chips"></div>
+    </div>
+    <img src="hi.webp" alt="Shrub waving">
+  </header>
+
+  <section class="find">
+    <label for="addr">Find your wallet</label>
+    <form id="findForm">
+      <input id="addr" placeholder="0x… your wallet address" autocomplete="off" spellcheck="false">
+      <button type="submit">Check</button>
+    </form>
+    <div class="result" id="result"></div>
+  </section>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-board="longest">Longest holders</button>
+    <button role="tab" aria-selected="false" data-board="top">Biggest bags</button>
+  </div>
+  <ol class="board" id="board"><li class="loading">Loading the hedgehogs…</li></ol>
+  <button class="more" id="more" hidden>Show more</button>
+
+  <section class="how">
+    <h2>How it works</h2>
+    <ul>
+      <li><b>Holding since</b> is when your current streak started: the moment your wallet reached <span id="minStreak">10,000</span> $SHRUB. Drop below that and the clock resets.</li>
+      <li><b>🌳 Never sold</b> means no tokens left the wallet during that streak.</li>
+      <li>The longest-holder board counts wallets with at least <span id="minLongest">100,000</span> $SHRUB.</li>
+      <li>Pools, lockers and other contracts are left out. Data comes straight from Ethereum.</li>
+    </ul>
+    <p id="updated"></p>
+  </section>
+</div>
+
+<script>
+(() => {
+  const STICK = ["king.webp", "cool.webp", "cheer.webp"];
+  const fmt = (n) => n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 1 : 2).replace(/\.0+$/, "") + "M" : n >= 1e3 ? Math.round(n / 1e3) + "K" : String(n);
+  const short = (a) => a.slice(0, 6) + "…" + a.slice(-4);
+  const date = (t) => new Date(t * 1000).toLocaleDateString("en-GB", { month: "short", year: "numeric" });
+  const days = (t) => Math.max(0, Math.floor((Date.now() / 1000 - t) / 86400));
+  const SUPPLY = 1e9;
+  const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const label = (a) => (data && data.labels && data.labels[a]) ? esc(data.labels[a]) : "";
+  let data, board = "longest", shown = 25, me = null;
+
+  function rowHTML(r, i) {
+    const [addr, bal, since, ns] = r;
+    const rank = i < 3 ? `<img src="${STICK[i]}" alt="#${i + 1}">` : i + 1;
+    const pct = (bal / SUPPLY * 100).toFixed(bal / SUPPLY >= 0.01 ? 2 : 3);
+    const main = board === "longest"
+      ? `<div class="big">${days(since).toLocaleString("en")} days</div><div class="sub">since ${date(since)}</div>`
+      : `<div class="big">${fmt(bal)}</div><div class="sub">${pct}% of supply</div>`;
+    const sub = board === "longest" ? `${fmt(bal)} $SHRUB` : `holding ${days(since).toLocaleString("en")} days`;
+    return `<li class="row${me === addr ? " me" : ""}"><div class="rank">${rank}</div>
+      <div class="who">${label(addr) ? `<span class="name">${label(addr)}</span>` : ""}<a href="https://etherscan.io/address/${addr}" target="_blank" rel="noopener">${short(addr)}</a>${ns ? '<span class="badge">🌳 never sold</span>' : ""}<div class="sub">${sub}</div></div>
+      <div class="stat">${main}</div></li>`;
+  }
+
+  function render() {
+    const list = data[board];
+    document.getElementById("board").innerHTML = list.slice(0, shown).map(rowHTML).join("");
+    document.getElementById("more").hidden = shown >= list.length;
+  }
+
+  document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(".tabs button").forEach((x) => x.setAttribute("aria-selected", x === b));
+    board = b.dataset.board; shown = 25; render();
+  }));
+  document.getElementById("more").addEventListener("click", () => { shown += 25; render(); });
+
+  document.getElementById("findForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const a = document.getElementById("addr").value.trim().toLowerCase();
+    const box = document.getElementById("result");
+    box.classList.add("show");
+    if (!/^0x[0-9a-f]{40}$/.test(a)) { box.innerHTML = `<div class="msg">That doesn't look like an Ethereum address.</div>`; return; }
+    const r = data.all.find((x) => x[0] === a);
+    if (!r) { box.innerHTML = `<div class="msg">This wallet holds less than ${data.min_streak.toLocaleString("en")} $SHRUB right now. Time to start your streak 🦔</div>`; return; }
+    const byAge = data.all.filter((x) => x[1] >= data.min_longest).sort((x, y) => x[2] - y[2]);
+    const byBag = [...data.all].sort((x, y) => y[1] - x[1]);
+    const ageRank = byAge.findIndex((x) => x[0] === a) + 1;
+    const bagRank = byBag.findIndex((x) => x[0] === a) + 1;
+    me = a; render();
+    box.innerHTML = `
+      <div class="box"><div class="k">Holding for</div><div class="v">${days(r[2]).toLocaleString("en")} days</div></div>
+      <div class="box"><div class="k">Longest-holder rank</div><div class="v">${ageRank ? "#" + ageRank.toLocaleString("en") : "–"}</div></div>
+      <div class="box"><div class="k">Bag rank</div><div class="v">#${bagRank.toLocaleString("en")}</div></div>
+      <div class="msg">${label(a) ? label(a) + " · " : ""}${fmt(r[1])} $SHRUB since ${date(r[2])}${r[3] ? " · 🌳 never sold" : ""}${ageRank ? "" : ` · hold ${data.min_longest.toLocaleString("en")}+ to join the longest-holder board`}</div>`;
+  });
+
+  fetch("data.json", { cache: "no-cache" }).then((r) => r.json()).then((d) => {
+    data = d;
+    document.getElementById("chips").innerHTML =
+      `<span class="chip"><b>${d.holders.toLocaleString("en")}</b> wallets holding ${fmt(d.min_streak)}+</span>` +
+      `<span class="chip">Longest streak <b>${days(d.longest[0][2]).toLocaleString("en")} days</b></span>`;
+    document.getElementById("minStreak").textContent = d.min_streak.toLocaleString("en");
+    document.getElementById("minLongest").textContent = d.min_longest.toLocaleString("en");
+    document.getElementById("updated").textContent = "Last updated " + new Date(d.updated * 1000).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) + ".";
+    render();
+  }).catch(() => { document.getElementById("board").innerHTML = '<li class="loading">Could not load the leaderboard. Try again in a minute.</li>'; });
+})();
+</script>
+</body>
+</html>

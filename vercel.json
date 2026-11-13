@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { "source": "/((?!assets/|fonts/|shrub-pack-2/).*)", "destination": "/index.html" }
+    { "source": "/((?!assets/|fonts/|shrub-pack-2/|leaderboard).*)", "destination": "/index.html" }
   ],
   "headers": [
     {
